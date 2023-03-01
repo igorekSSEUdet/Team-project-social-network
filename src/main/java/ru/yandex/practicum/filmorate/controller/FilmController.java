@@ -11,7 +11,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-
     private static final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
     private final Map<Integer, Film> films = new HashMap<>();
 

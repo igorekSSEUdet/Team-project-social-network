@@ -13,7 +13,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    Map<Integer, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
 
     @PostMapping
     public User addUser(@RequestBody @Valid User user) {
