@@ -10,8 +10,7 @@ import java.util.Date;
 
 @Data
 public class User {
-    private static int count = 0;
-    private int id = ++count;
+    private int id;
     @Email
     private String email;
     @NotNull
