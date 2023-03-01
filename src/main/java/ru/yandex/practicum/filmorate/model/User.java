@@ -6,7 +6,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 public class User {
@@ -18,5 +18,5 @@ public class User {
     private String login;
     private String name;
     @Past
-    private Date birthday;
+    private LocalDate birthday;
 }
