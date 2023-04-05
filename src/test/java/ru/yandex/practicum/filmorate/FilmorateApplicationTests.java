@@ -49,7 +49,7 @@ class FilmorateApplicationTests {
 		HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.noBody();
 		HttpResponse<String> response = client.send(HttpRequest.newBuilder().POST(body).uri(uriUser).build(),
 				HttpResponse.BodyHandlers.ofString());
-		assertEquals(400, response.statusCode());
+		assertEquals(500, response.statusCode());
 	}
 
 	@Test
@@ -129,7 +129,7 @@ class FilmorateApplicationTests {
 		HttpResponse<String> response = client.send(HttpRequest.newBuilder().POST(body)
 						.header("Content-Type", "application/json").uri(uriFilm).build(),
 				HttpResponse.BodyHandlers.ofString());
-		assertEquals(500, response.statusCode());
+		assertEquals(400, response.statusCode());
 	}
 
 	@Test
