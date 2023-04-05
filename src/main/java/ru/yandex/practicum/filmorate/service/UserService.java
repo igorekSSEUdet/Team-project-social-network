@@ -16,13 +16,13 @@ public class UserService {
     private final UserStorage userStorage;
 
     public User addUser(User user) {
-        if(user.getName() == null || user.getName().isBlank()) user.setName(user.getLogin());
+        if (user.getName() == null || user.getName().isBlank()) user.setName(user.getLogin());
         return userStorage.addUser(user);
     }
 
     public User updateUser(User user) {
-        if(userStorage.getById(user.getId()) != null) {
-            if(user.getName() == null) user.setName(user.getLogin());
+        if (userStorage.getById(user.getId()) != null) {
+            if (user.getName() == null) user.setName(user.getLogin());
             return userStorage.updateUser(user);
         } else throw new NoSuchElementException();
     }
@@ -32,27 +32,27 @@ public class UserService {
     }
 
     public User getUserById(int id) {
-        if(userStorage.getById(id) != null) {
+        if (userStorage.getById(id) != null) {
             return userStorage.getById(id);
         } else throw new NoSuchElementException();
     }
 
     public void addFriend(int firstUser, int secondUser) {
-        if(userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
+        if (userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
             userStorage.getById(firstUser).getFriends().add(secondUser);
             userStorage.getById(secondUser).getFriends().add(firstUser);
         } else throw new NoSuchElementException();
     }
 
     public void deleteFriend(int firstUser, int secondUser) {
-        if(userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
+        if (userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
         userStorage.getById(firstUser).getFriends().remove(secondUser);
         userStorage.getById(secondUser).getFriends().remove(firstUser);
         } else throw new NoSuchElementException();
     }
 
     public List<User> getCommonFriends(int firstUser, int secondUser) {
-        if(userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
+        if (userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
             List<Integer> commonFriendsIds = new ArrayList<>(userStorage.getById(firstUser).getFriends());
             commonFriendsIds.retainAll(userStorage.getById(secondUser).getFriends());
             List<User> commonFriends = new ArrayList<>();
@@ -64,7 +64,7 @@ public class UserService {
     }
 
     public List<User> getFriends(int id) {
-        if(userStorage.getById(id) != null) {
+        if (userStorage.getById(id) != null) {
             Set<Integer> friendsIds = userStorage.getById(id).getFriends();
             List<User> friends = new ArrayList<>();
             for (int friendsId : friendsIds) {
