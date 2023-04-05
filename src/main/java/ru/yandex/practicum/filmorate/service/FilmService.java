@@ -28,33 +28,33 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
-        if(film.getReleaseDate().isAfter(MIN_DATE) && filmStorage.getById(film.getId()) != null) {
+        if (film.getReleaseDate().isAfter(MIN_DATE) && filmStorage.getById(film.getId()) != null) {
             return filmStorage.updateFilm(film);
         } else throw new NoSuchElementException();
     }
 
     public Film getFilmById(int id) {
-        if(filmStorage.getById(id) != null) {
+        if (filmStorage.getById(id) != null) {
             return filmStorage.getById(id);
         } else throw new NoSuchElementException();
     }
 
     public void addLike(int filmId, int userId) {
-        if(filmStorage.getById(filmId) != null && userStorage.getById(userId) != null) {
+        if (filmStorage.getById(filmId) != null && userStorage.getById(userId) != null) {
             filmStorage.getById(filmId).getLikes().add(userId);
         } else throw new NoSuchElementException();
     }
 
     public void removeLike(int filmId, int userId) {
-        if(filmStorage.getById(filmId) != null && userStorage.getById(userId) != null) {
+        if (filmStorage.getById(filmId) != null && userStorage.getById(userId) != null) {
             filmStorage.getById(filmId).getLikes().remove(userId);
         } else throw new NoSuchElementException();
     }
 
     public List<Film> getPopular(int count) {
         List<Film> films = new ArrayList<>(filmStorage.getFilmsList());
-        if(count != 1) count--;
-        if(count > films.size()) count = films.size();
+        if (count != 1) count--;
+        if (count > films.size()) count = films.size();
         films.sort((Comparator.comparingInt(o -> o.getLikes().size())));
         Collections.reverse(films);
         return films.subList(0,count);
