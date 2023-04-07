@@ -50,14 +50,14 @@ public class ValidatorTest {
         Set<ConstraintViolation<Film>> violations = validator.validateProperty(film, "name");
         List<String> actual = violations.stream().map(ConstraintViolation::getMessage)
                 .sorted(Comparator.comparingInt(String::length)).collect(Collectors.toList());
-        assertEquals(new ArrayList<>(List.of("не должно быть пустым", "не должно равняться null")), actual);
+        assertEquals(new ArrayList<>(List.of("Нет названия фильма", "Название фильма не может быть пустым")), actual);
     }
 
     @Test
     void shouldShowViolationForFilmWithNegativeDuration() {
         film.setDuration(-10);
         Set<ConstraintViolation<Film>> violations = validator.validateProperty(film, "duration");
-        assertEquals(new ArrayList<>(List.of("должно быть больше 0")),
+        assertEquals(new ArrayList<>(List.of("Продолжительность не может быть отрицательной")),
                 violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList()));
     }
 
@@ -67,7 +67,7 @@ public class ValidatorTest {
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         Set<ConstraintViolation<Film>> violations = validator.validateProperty(film, "description");
-        assertEquals(new ArrayList<>(List.of("длина должна составлять от 0 до 200")),
+        assertEquals(new ArrayList<>(List.of("Превышен лимит описания")),
                 violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList()));
     }
 
@@ -81,7 +81,7 @@ public class ValidatorTest {
     void shouldShowViolationForIncorrectUserEmail() {
         user.setEmail("aaaaaa@");
         Set<ConstraintViolation<User>> violations = validator.validateProperty(user, "email");
-        assertEquals(new ArrayList<>(List.of("должно иметь формат адреса электронной почты")),
+        assertEquals(new ArrayList<>(List.of("Некорректный формат email")),
                 violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList()));
     }
 
@@ -89,7 +89,7 @@ public class ValidatorTest {
     void shouldShowViolationForUserWithNoLogin() {
         user.setLogin(null);
         Set<ConstraintViolation<User>> violations = validator.validateProperty(user, "login");
-        List<String> expected = new ArrayList<>(List.of("не должно быть пустым", "не должно равняться null"));
+        List<String> expected = new ArrayList<>(List.of("Нет логина", "Логин не может быть пустым"));
         List<String> actual = violations.stream().map(ConstraintViolation::getMessage)
                 .sorted(Comparator.comparingInt(String::length)).collect(Collectors.toList());
         assertEquals(expected, actual);
@@ -99,7 +99,7 @@ public class ValidatorTest {
     void shouldShowViolationForUserWithBirthdayInFuture() {
         user.setBirthday(LocalDate.of(2300,1,1));
         Set<ConstraintViolation<User>> violations = validator.validateProperty(user, "birthday");
-        assertEquals(new ArrayList<>(List.of("должно содержать прошедшую дату")),
+        assertEquals(new ArrayList<>(List.of("Некорректная дата рождения")),
                 violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList()));
     }
 }
