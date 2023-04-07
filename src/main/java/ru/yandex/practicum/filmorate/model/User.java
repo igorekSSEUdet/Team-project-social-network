@@ -13,9 +13,9 @@ import java.util.TreeSet;
 @Data
 public class User {
     private int id;
-    @Email(message= "Некорректный формат email")
+    @Email(message = "Некорректный формат email")
     private String email;
-    @NotNull(message= "Нет логина")
+    @NotNull(message = "Нет логина")
     @NotBlank(message = "Логин не может быть пустым")
     private String login;
     private String name;
