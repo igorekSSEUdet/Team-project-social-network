@@ -24,7 +24,7 @@ public class UserService {
         if (userStorage.getById(user.getId()) != null) {
             if (user.getName() == null) user.setName(user.getLogin());
             return userStorage.updateUser(user);
-        } else throw new NoSuchElementException();
+        } else throw new NoSuchElementException("Пользователь не найден");
     }
 
     public List<User> getUsers() {
@@ -34,21 +34,21 @@ public class UserService {
     public User getUserById(int id) {
         if (userStorage.getById(id) != null) {
             return userStorage.getById(id);
-        } else throw new NoSuchElementException();
+        } else throw new NoSuchElementException("Пользователь не  найден");
     }
 
     public void addFriend(int firstUser, int secondUser) {
         if (userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
             userStorage.getById(firstUser).getFriends().add(secondUser);
             userStorage.getById(secondUser).getFriends().add(firstUser);
-        } else throw new NoSuchElementException();
+        } else throw new NoSuchElementException("Пользователь не найден");
     }
 
     public void deleteFriend(int firstUser, int secondUser) {
         if (userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
         userStorage.getById(firstUser).getFriends().remove(secondUser);
         userStorage.getById(secondUser).getFriends().remove(firstUser);
-        } else throw new NoSuchElementException();
+        } else throw new NoSuchElementException("Пользователь не найден");
     }
 
     public List<User> getCommonFriends(int firstUser, int secondUser) {
@@ -60,7 +60,7 @@ public class UserService {
                 commonFriends.add(userStorage.getById(commonFriendId));
             }
             return commonFriends;
-        } else throw new NoSuchElementException();
+        } else throw new NoSuchElementException("Пользователь не найден");
     }
 
     public List<User> getFriends(int id) {
@@ -71,6 +71,6 @@ public class UserService {
                 friends.add(userStorage.getById(friendsId));
             }
             return friends;
-        } else throw new NoSuchElementException();
+        } else throw new NoSuchElementException("Пользователь не найден");
     }
 }

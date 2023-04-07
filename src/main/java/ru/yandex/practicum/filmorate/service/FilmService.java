@@ -18,9 +18,9 @@ public class FilmService {
     private final UserStorage userStorage;
 
     public Film addFilm(Film film) {
-        if (film.getReleaseDate().isAfter(MIN_DATE)) {
+        if (film.getReleaseDate() == null || film.getReleaseDate().isAfter(MIN_DATE)) {
             return filmStorage.addFilm(film);
-        } else throw new ValidationException();
+        } else throw new ValidationException("Некорректная дата выхода");
     }
 
     public List<Film> getFilms() {
@@ -28,27 +28,29 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
-        if (film.getReleaseDate().isAfter(MIN_DATE) && filmStorage.getById(film.getId()) != null) {
-            return filmStorage.updateFilm(film);
-        } else throw new NoSuchElementException();
+        if (filmStorage.getById(film.getId()) != null) {
+            if (film.getReleaseDate() == null || film.getReleaseDate().isAfter(MIN_DATE)) {
+                return filmStorage.updateFilm(film);
+            } else throw new ValidationException("Некорректная дата выхода");
+        } else throw new NoSuchElementException("Фильм с данным id не найден");
     }
 
     public Film getFilmById(int id) {
         if (filmStorage.getById(id) != null) {
             return filmStorage.getById(id);
-        } else throw new NoSuchElementException();
+        } else throw new NoSuchElementException("Фильм не найден");
     }
 
     public void addLike(int filmId, int userId) {
         if (filmStorage.getById(filmId) != null && userStorage.getById(userId) != null) {
             filmStorage.getById(filmId).getLikes().add(userId);
-        } else throw new NoSuchElementException();
+        } else throw new NoSuchElementException("Некорректный id пользователя/фильма");
     }
 
     public void removeLike(int filmId, int userId) {
         if (filmStorage.getById(filmId) != null && userStorage.getById(userId) != null) {
             filmStorage.getById(filmId).getLikes().remove(userId);
-        } else throw new NoSuchElementException();
+        } else throw new NoSuchElementException("Некорректный id пользователя/фильма");
     }
 
     public List<Film> getPopular(int count) {

@@ -31,8 +31,8 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@RequestBody @Valid Film film) {
-            log.debug("Получен запрос PUT /films.");
-            return filmService.updateFilm(film);
+        log.debug("Получен запрос PUT /films.");
+        return filmService.updateFilm(film);
     }
 
     @GetMapping("/{filmId}")
