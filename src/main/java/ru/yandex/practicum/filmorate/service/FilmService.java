@@ -43,13 +43,13 @@ public class FilmService {
 
     public void addLike(int filmId, int userId) {
         if (filmStorage.getById(filmId) != null && userStorage.getById(userId) != null) {
-            filmStorage.getById(filmId).getLikes().add(userId);
+            filmStorage.addLike(userId, filmId);
         } else throw new NoSuchElementException("Некорректный id пользователя/фильма");
     }
 
     public void removeLike(int filmId, int userId) {
         if (filmStorage.getById(filmId) != null && userStorage.getById(userId) != null) {
-            filmStorage.getById(filmId).getLikes().remove(userId);
+            filmStorage.removeLike(userId, filmId);
         } else throw new NoSuchElementException("Некорректный id пользователя/фильма");
     }
 

@@ -7,8 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Data
 public class Film {
@@ -22,4 +21,16 @@ public class Film {
     @Positive(message = "Продолжительность не может быть отрицательной")
     private int duration;
     private Set<Integer> likes = new TreeSet<>();
+    private Set<Genre> genres = new TreeSet<>();
+    private Mpa mpa;
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", name);
+        map.put("description", description);
+        map.put("release_date", releaseDate);
+        map.put("duration", duration);
+        map.put("mpa_id", mpa.getId());
+        return map;
+    }
 }
