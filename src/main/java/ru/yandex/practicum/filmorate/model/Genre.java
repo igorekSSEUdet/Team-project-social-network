@@ -1,18 +1,30 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Genre implements Comparable<Genre> {
     private Integer id;
+
     private String name;
+
+    @JsonIgnore
+    private int filmId;
 
     public Genre(Integer id) {
         this.id = id;
+    }
+
+    public Genre(Integer id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     @Override

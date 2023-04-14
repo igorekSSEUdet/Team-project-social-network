@@ -30,7 +30,7 @@ public class Film {
         map.put("description", description);
         map.put("release_date", releaseDate);
         map.put("duration", duration);
-        map.put("mpa_id", mpa.getId());
+        if(mpa != null) map.put("mpa_id", mpa.getId());
         return map;
     }
 }

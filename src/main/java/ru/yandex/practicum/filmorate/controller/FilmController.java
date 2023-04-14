@@ -19,7 +19,7 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@RequestBody @Valid  Film film) {
-        log.debug("Получен запрос POST /films.");
+        log.debug("Получен запрос POST /films.\n" + film.toString());
         return filmService.addFilm(film);
     }
 
@@ -31,7 +31,7 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@RequestBody @Valid Film film) {
-        log.debug("Получен запрос PUT /films.");
+        log.debug("Получен запрос PUT /films.\n" + film.toString());
         return filmService.updateFilm(film);
     }
 

@@ -23,7 +23,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        film.setMpa(mpaStorage.getById(film.getMpa().getId()));
+        if (film.getMpa() != null) film.setMpa(mpaStorage.getById(film.getMpa().getId()));
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
                 .usingGeneratedKeyColumns("film_id");
@@ -34,14 +34,12 @@ public class FilmDbStorage implements FilmStorage {
                 jdbcTemplate.update("INSERT INTO films_genres VALUES (?,?)", film.getId(), genre.getId());
             }
         }
-        jdbcTemplate.update("UPDATE films SET mpa_id = ? WHERE film_id = ?",
-                film.getMpa().getId(), film.getId());
         return film;
     }
 
     @Override
     public Film updateFilm(Film film) {
-        film.setMpa(mpaStorage.getById(film.getMpa().getId()));
+        if (film.getMpa() != null) film.setMpa(mpaStorage.getById(film.getMpa().getId()));
         String sql = "UPDATE films SET film_id = ?, name = ?, description = ?," +
                 " release_date = ?, duration = ?, mpa_id = ? WHERE film_id = ?";
         jdbcTemplate.update(sql, film.getId(), film.getName(), film.getDescription(),
@@ -57,8 +55,35 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilmsList() {
-        String sql = "SELECT * FROM films";
-        return jdbcTemplate.query(sql, this::createFilm);
+        // Если запрос должен быть один и запрашивать для каждого фильма его жанры по id нельзя
+        // (как в createFilm(), использованном в предыдущей итерации), то получается что-то такое
+        String sql = "SELECT * FROM films LEFT JOIN films_genres ON films.film_id = films_genres.film_id" +
+                " LEFT JOIN genres ON films_genres.genre_id = genres.genre_id";
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
+        Map<Integer, Film> filmMap = new HashMap<>();
+        List<Genre> genres = new ArrayList<>();
+        while (rowSet.next()) {
+            Film film = new Film();
+            film.setId(rowSet.getInt("film_id"));
+            film.setName(rowSet.getString("name"));
+            film.setDescription(rowSet.getString("description"));
+            if (rowSet.getDate("release_date") != null)
+                film.setReleaseDate(rowSet.getDate("release_date").toLocalDate());
+            film.setDuration(rowSet.getInt("duration"));
+            if (rowSet.getInt("mpa_id") != 0)
+                film.setMpa(mpaStorage.getById(rowSet.getInt("mpa_id")));
+            filmMap.put(film.getId(), film);
+            if (rowSet.getString("genre") != null) {
+                Genre genre = new Genre();
+                genre.setFilmId(rowSet.getInt("film_id"));
+                genre.setId(rowSet.getInt("genre_id"));
+                genre.setName(rowSet.getString("genre"));
+                genres.add(genre);
+            }
+
+        }
+        genres.forEach(genre -> filmMap.get(genre.getFilmId()).getGenres().add(genre));
+        return new ArrayList<>(filmMap.values());
     }
 
     @Override
@@ -91,9 +116,11 @@ public class FilmDbStorage implements FilmStorage {
         film.setId(resultSet.getInt("film_id"));
         film.setName(resultSet.getString("name"));
         film.setDescription(resultSet.getString("description"));
-        film.setReleaseDate(resultSet.getDate("release_date").toLocalDate());
+        if (resultSet.getDate("release_date") != null)
+            film.setReleaseDate(resultSet.getDate("release_date").toLocalDate());
         film.setDuration(resultSet.getInt("duration"));
-        film.setMpa(mpaStorage.getById(resultSet.getInt("mpa_id")));
+        if (resultSet.getInt("mpa_id") != 0)
+            film.setMpa(mpaStorage.getById(resultSet.getInt("mpa_id")));
         String sqlGenres =
                 "SELECT films_genres.genre_id, genre FROM films_genres " +
                         "JOIN genres on films_genres.genre_id = genres.genre_id WHERE film_id = ?" +
