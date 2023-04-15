@@ -39,15 +39,13 @@ public class UserService {
 
     public void addFriend(int firstUser, int secondUser) {
         if (userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
-            userStorage.getById(firstUser).getFriends().add(secondUser);
-            userStorage.getById(secondUser).getFriends().add(firstUser);
+            userStorage.addFriend(firstUser, secondUser);
         } else throw new NoSuchElementException("Пользователь не найден");
     }
 
     public void deleteFriend(int firstUser, int secondUser) {
         if (userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
-        userStorage.getById(firstUser).getFriends().remove(secondUser);
-        userStorage.getById(secondUser).getFriends().remove(firstUser);
+        userStorage.deleteFriend(firstUser, secondUser);
         } else throw new NoSuchElementException("Пользователь не найден");
     }
 

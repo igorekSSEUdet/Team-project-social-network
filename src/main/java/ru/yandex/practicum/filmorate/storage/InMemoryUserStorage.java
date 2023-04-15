@@ -36,7 +36,20 @@ public class InMemoryUserStorage implements UserStorage {
         return new ArrayList<>(users.values());
     }
 
+    @Override
     public User getById(int id) {
         return users.get(id);
+    }
+
+    @Override
+    public void addFriend(int first, int second) {
+        users.get(first).getFriends().add(users.get(second).getId());
+        users.get(second).getFriends().add(users.get(first).getId());
+    }
+
+    @Override
+    public void deleteFriend(int first, int second) {
+        users.get(first).getFriends().remove(users.get(second).getId());
+        users.get(second).getFriends().remove(users.get(first).getId());
     }
 }

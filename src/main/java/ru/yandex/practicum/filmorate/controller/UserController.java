@@ -19,13 +19,13 @@ public class UserController {
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
-        log.debug("Получен запрос POST /users.");
+        log.debug("Получен запрос POST /users.\n" + user.toString());
         return userService.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        log.debug("Получен запрос PUT /users.");
+        log.debug("Получен запрос PUT /users.\n" + user.toString());
         return userService.updateUser(user);
     }
 
