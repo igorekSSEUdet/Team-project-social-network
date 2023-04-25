@@ -55,8 +55,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilmsList() {
-        // Если запрос должен быть один и запрашивать для каждого фильма его жанры по id нельзя
-        // (как в createFilm(), использованном в предыдущей итерации), то получается что-то такое
+        // Ревью ТЗ11: запрос должен быть один
         String sql = "SELECT * FROM films LEFT JOIN films_genres ON films.film_id = films_genres.film_id" +
                 " LEFT JOIN genres ON films_genres.genre_id = genres.genre_id";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
