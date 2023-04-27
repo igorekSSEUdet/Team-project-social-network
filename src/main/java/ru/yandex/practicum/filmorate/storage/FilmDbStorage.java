@@ -133,4 +133,15 @@ public class FilmDbStorage implements FilmStorage {
                 (rs, rowNum) -> rs.getInt("user_id"), film.getId()));
         return film;
     }
+
+    private void insertDirectors(Film film) {
+        if (!film.getDirectors().isEmpty()) {
+            film.getDirectors().forEach(director -> {
+                if (directorStorage.getById(director.getId()) != null) {
+                    jdbcTemplate.update("INSERT INTO films_directors VALUES (?, ?)",
+                            film.getId(), director.getId());
+                } else throw new NoSuchElementException("Режиссёр не найден");
+            });
+        }
+    }
 }
