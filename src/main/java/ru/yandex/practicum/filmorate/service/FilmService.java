@@ -29,7 +29,7 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
-        if (filmStorage.getById(film.getId()) != null) {
+        if (filmStorage.isExists(film.getId())) {
             if (film.getReleaseDate() == null || film.getReleaseDate().isAfter(MIN_DATE)) {
                 return filmStorage.updateFilm(film);
             } else throw new ValidationException("Некорректная дата выхода");
@@ -37,19 +37,19 @@ public class FilmService {
     }
 
     public Film getFilmById(int id) {
-        if (filmStorage.getById(id) != null) {
+        if (filmStorage.isExists(id)) {
             return filmStorage.getById(id);
         } else throw new NoSuchElementException("Фильм не найден");
     }
 
     public void addLike(int filmId, int userId) {
-        if (filmStorage.getById(filmId) != null && userStorage.getById(userId) != null) {
+        if (filmStorage.isExists(filmId) && userStorage.isExists(userId)) {
             filmStorage.addLike(userId, filmId);
         } else throw new NoSuchElementException("Некорректный id пользователя/фильма");
     }
 
     public void removeLike(int filmId, int userId) {
-        if (filmStorage.getById(filmId) != null && userStorage.getById(userId) != null) {
+        if (filmStorage.isExists(filmId) && userStorage.isExists(userId)) {
             filmStorage.removeLike(userId, filmId);
         } else throw new NoSuchElementException("Некорректный id пользователя/фильма");
     }

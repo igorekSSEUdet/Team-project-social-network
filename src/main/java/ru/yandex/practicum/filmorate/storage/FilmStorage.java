@@ -23,4 +23,6 @@ public interface FilmStorage {
     List<Film> getFilmsByDirectorWithYear(int id);
 
     List<Film> getFilmsByDirectorWithLikes(int id);
+
+    boolean isExists(int id);
 }

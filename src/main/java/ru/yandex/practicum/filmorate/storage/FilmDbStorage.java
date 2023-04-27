@@ -63,22 +63,20 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getById(int id) {
-        if (isExists(id)) {
-            String sql = "SELECT * FROM films WHERE film_id = ?";
-            return jdbcTemplate.queryForObject(sql, this::createFilm, id);
-        } else return null;
+        String sql = "SELECT * FROM films WHERE film_id = ?";
+        return jdbcTemplate.queryForObject(sql, this::createFilm, id);
     }
 
     @Override
     public void addLike(int userId, int filmId) {
-            String sql = "INSERT INTO likes VALUES (?, ?)";
-            jdbcTemplate.update(sql, userId, filmId);
+        String sql = "INSERT INTO likes VALUES (?, ?)";
+        jdbcTemplate.update(sql, userId, filmId);
     }
 
     @Override
     public void removeLike(int userId, int filmId) {
-            String sql = "DELETE FROM likes WHERE user_id = ? AND film_id = ?";
-            jdbcTemplate.update(sql, userId, filmId);
+        String sql = "DELETE FROM likes WHERE user_id = ? AND film_id = ?";
+        jdbcTemplate.update(sql, userId, filmId);
     }
 
     @Override
@@ -105,6 +103,13 @@ public class FilmDbStorage implements FilmStorage {
         return new ArrayList<>(jdbcTemplate.query(sql, this::createFilm, id));
     }
 
+    @Override
+    public boolean isExists(int id) {
+        String sql = "SELECT * FROM films WHERE film_id = ?";
+        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, id);
+        return rows.next();
+    }
+
     private Film createFilm(ResultSet resultSet, int row) throws SQLException {
         Film film = new Film();
         film.setId(resultSet.getInt("film_id"));
@@ -127,22 +132,5 @@ public class FilmDbStorage implements FilmStorage {
         film.getLikes().addAll(jdbcTemplate.query(sqlLikes,
                 (rs, rowNum) -> rs.getInt("user_id"), film.getId()));
         return film;
-    }
-
-    private boolean isExists(int id) {
-        String sql = "SELECT * FROM films WHERE film_id = ?";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, id);
-        return rows.next();
-    }
-
-    private void insertDirectors(Film film) {
-        if (!film.getDirectors().isEmpty()) {
-            film.getDirectors().forEach(director -> {
-                if (directorStorage.getById(director.getId()) != null) {
-                    jdbcTemplate.update("INSERT INTO films_directors VALUES (?, ?)",
-                            film.getId(), director.getId());
-                } else throw new NoSuchElementException("Режиссёр не найден");
-            });
-        }
     }
 }
