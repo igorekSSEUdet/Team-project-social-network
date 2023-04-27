@@ -55,8 +55,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilmsList() {
-        // Если запрос должен быть один и запрашивать для каждого фильма его жанры по id нельзя
-        // (как в createFilm(), использованном в предыдущей итерации), то получается что-то такое
+        // Ревью ТЗ11: запрос должен быть один
         String sql = "SELECT * FROM films LEFT JOIN films_genres ON films.film_id = films_genres.film_id" +
                 " LEFT JOIN genres ON films_genres.genre_id = genres.genre_id";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
@@ -88,27 +87,32 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getById(int id) {
-        if (isExists(id)) {
-            String sql = "SELECT * FROM films WHERE film_id = ?";
-            return jdbcTemplate.queryForObject(sql, this::createFilm, id);
-        } else return null;
+        String sql = "SELECT * FROM films WHERE film_id = ?";
+        return jdbcTemplate.queryForObject(sql, this::createFilm, id);
     }
 
     @Override
     public void addLike(int userId, int filmId) {
-            String sql = "INSERT INTO likes VALUES (?, ?)";
-            jdbcTemplate.update(sql, userId, filmId);
+        String sql = "INSERT INTO likes VALUES (?, ?)";
+        jdbcTemplate.update(sql, userId, filmId);
     }
 
     @Override
     public void removeLike(int userId, int filmId) {
-            String sql = "DELETE FROM likes WHERE user_id = ? AND film_id = ?";
-            jdbcTemplate.update(sql, userId, filmId);
+        String sql = "DELETE FROM likes WHERE user_id = ? AND film_id = ?";
+        jdbcTemplate.update(sql, userId, filmId);
     }
 
     @Override
     public void deleteFilm(int id) {
         throw new NotYetImplementedException("Не поддерживается");
+    }
+
+    @Override
+    public boolean isExists(int id) {
+        String sql = "SELECT * FROM films WHERE film_id = ?";
+        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, id);
+        return rows.next();
     }
 
     private Film createFilm(ResultSet resultSet, int row) throws SQLException {
@@ -132,11 +136,5 @@ public class FilmDbStorage implements FilmStorage {
         film.getLikes().addAll(jdbcTemplate.query(sqlLikes,
                 (rs, rowNum) -> rs.getInt("user_id"), film.getId()));
         return film;
-    }
-
-    private boolean isExists(int id) {
-        String sql = "SELECT * FROM films WHERE film_id = ?";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, id);
-        return rows.next();
     }
 }
