@@ -16,20 +16,20 @@ public class ReviewService {
     private final FilmStorage filmStorage;
 
     public Review addReview(Review review) {
-        if (userStorage.getById(review.getUserId()) != null
-                && filmStorage.getById(review.getFilmId()) != null) {
+        if (userStorage.isExists(review.getUserId())
+                && filmStorage.isExists(review.getFilmId())) {
             return reviewStorage.addReview(review);
         } else throw new NoSuchElementException("Пользователь/Фильм не найдены");
     }
 
     public Review updateReview(Review review) {
-        if (reviewStorage.getById(review.getReviewId()) != null) {
+        if (reviewStorage.isExists(review.getReviewId())) {
             return reviewStorage.updateReview(review);
         } else throw new NoSuchElementException("Отзыв не найден");
     }
 
     public Review getReviewById(int id) {
-        if (reviewStorage.getById(id) != null) {
+        if (reviewStorage.isExists(id)) {
             return reviewStorage.getById(id);
         } else throw new NoSuchElementException("Отзыв не найден");
     }
@@ -38,9 +38,9 @@ public class ReviewService {
         reviewStorage.deleteReview(id);
     }
 
-    public List<Review> getReviewList(Integer filmId, int count) {
+    public List<Review> getReviewListForFilm(Integer filmId, int count) {
         if (filmId == null) return getReviewList(count);
-        if (filmStorage.getById(filmId) != null) {
+        if (filmStorage.isExists(filmId)) {
            return reviewStorage.getByFilm(filmId, count);
         } else throw new NoSuchElementException("Фильм не найден");
     }
@@ -50,7 +50,7 @@ public class ReviewService {
     }
 
     public void addLike(int id, int userId, boolean isPositive) {
-        if (reviewStorage.getById(id) != null && userStorage.getById(userId) != null) {
+        if (reviewStorage.isExists(id) && userStorage.isExists(userId)) {
             reviewStorage.addLike(id, userId, isPositive);
         } else throw new NoSuchElementException("Отзыв/Пользователь не найдены");
     }

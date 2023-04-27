@@ -44,7 +44,7 @@ public class ReviewController {
     public List<Review> getReviewList(@RequestParam(required = false) Integer filmId,
                                       @RequestParam(defaultValue = "10") int count) {
         log.debug("Получен запрос GET /reviews");
-        return reviewService.getReviewList(filmId, count);
+        return reviewService.getReviewListForFilm(filmId, count);
     }
 
     @PutMapping("/{id}/like/{userId}")

@@ -36,10 +36,8 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review getById(int id) {
-        if (isExists(id)) {
-            String sql = "SELECT * FROM reviews WHERE review_id = ?";
-            return jdbcTemplate.queryForObject(sql, this::createReview, id);
-        } else return null;
+        String sql = "SELECT * FROM reviews WHERE review_id = ?";
+        return jdbcTemplate.queryForObject(sql, this::createReview, id);
     }
 
     @Override
@@ -76,6 +74,13 @@ public class ReviewDbStorage implements ReviewStorage {
         updateUseful(id, isPositive);
     }
 
+    @Override
+    public boolean isExists(int id) {
+        String sql = "SELECT * FROM reviews WHERE review_id = ?";
+        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, id);
+        return rows.next();
+    }
+
     private Review createReview(ResultSet resultSet, int rowNum) throws SQLException {
         Review review = new Review();
         review.setReviewId(resultSet.getInt("review_id"));
@@ -95,11 +100,5 @@ public class ReviewDbStorage implements ReviewStorage {
             sql = "UPDATE reviews SET useful = useful - 1 WHERE review_id = ?";
         }
         jdbcTemplate.update(sql, id);
-    }
-
-    private boolean isExists(int id) {
-        String sql = "SELECT * FROM reviews WHERE review_id = ?";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, id);
-        return rows.next();
     }
 }
