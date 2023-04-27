@@ -58,4 +58,10 @@ public class FilmController {
         log.debug(String.format("Получен запрос GET films/popular на %d фильмов", count));
         return filmService.getPopular(count);
     }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsByDirector(@PathVariable int directorId, @RequestParam String sortBy) {
+        log.debug(String.format("Получен запрос GET /films/directors/%d", directorId));
+        return filmService.getFilmsByDirector(directorId, sortBy);
+    }
 }

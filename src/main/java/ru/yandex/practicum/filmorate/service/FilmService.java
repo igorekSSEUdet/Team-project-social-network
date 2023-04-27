@@ -16,6 +16,7 @@ public class FilmService {
     private static final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final DirectorService directorService;
 
     public Film addFilm(Film film) {
         if (film.getReleaseDate() == null || film.getReleaseDate().isAfter(MIN_DATE)) {
@@ -60,5 +61,17 @@ public class FilmService {
         films.sort((Comparator.comparingInt(o -> o.getLikes().size())));
         Collections.reverse(films);
         return films.subList(0,count);
+    }
+
+    public List<Film> getFilmsByDirector(int id, String sortBy) {
+        directorService.getDirectorById(id);
+        sortBy = sortBy.trim().toLowerCase();
+        switch (sortBy) {
+            case "year":
+                return filmStorage.getFilmsByDirectorWithYear(id);
+            case "likes":
+                return filmStorage.getFilmsByDirectorWithLikes(id);
+            default: throw new NoSuchElementException("Некорректный параметр запроса");
+        }
     }
 }
