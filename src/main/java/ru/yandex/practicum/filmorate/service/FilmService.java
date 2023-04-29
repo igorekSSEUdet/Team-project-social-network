@@ -60,7 +60,7 @@ public class FilmService {
         if (count > films.size()) count = films.size();
         films.sort((Comparator.comparingInt(o -> o.getLikes().size())));
         Collections.reverse(films);
-        return films.subList(0,count);
+        return films.subList(0, count);
     }
 
     public List<Film> getFilmsByDirector(int id, String sortBy) {
@@ -71,7 +71,8 @@ public class FilmService {
                 return filmStorage.getFilmsByDirectorWithYear(id);
             case "likes":
                 return filmStorage.getFilmsByDirectorWithLikes(id);
-            default: throw new NoSuchElementException("Некорректный параметр запроса");
+            default:
+                throw new NoSuchElementException("Некорректный параметр запроса");
         }
     }
 }

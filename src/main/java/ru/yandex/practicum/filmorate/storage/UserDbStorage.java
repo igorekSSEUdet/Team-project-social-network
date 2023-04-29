@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
@@ -19,6 +20,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final EventUtils eventUtils;
 
     @Override
     public User addUser(User user) {
@@ -46,12 +48,14 @@ public class UserDbStorage implements UserStorage {
     public void addFriend(int firstId, int secondId) {
         String sql = "INSERT INTO friends VALUES (?, ?)";
         jdbcTemplate.update(sql, secondId, firstId);
+        eventUtils.addEvent(firstId, "FRIEND", "ADD", secondId);
     }
 
     @Override
     public void deleteFriend(int firstId, int secondId) {
         String sql = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sql, secondId, firstId);
+        eventUtils.addEvent(firstId, "FRIEND", "REMOVE", secondId);
     }
 
     @Override
@@ -86,5 +90,22 @@ public class UserDbStorage implements UserStorage {
     private List<User> getFriends(int id) {
         String sql = "SELECT * FROM users JOIN friends ON users.user_id=friends.user_id WHERE friends.friend_id = ?";
         return jdbcTemplate.query(sql, this::createUser, id);
+    }
+
+    @Override
+    public List<Event> getEvents(int userId) {
+        String sql = "SELECT * FROM events WHERE user_id = ?";
+        return jdbcTemplate.query(sql, this::createEvent, userId);
+    }
+
+    private Event createEvent(ResultSet resultSet, int rowNum) throws SQLException {
+        return Event.builder()
+                .eventId(resultSet.getInt("event_id"))
+                .timestamp(resultSet.getLong("timestamp"))
+                .userId(resultSet.getInt("user_id"))
+                .eventType(resultSet.getString("eventType"))
+                .operation(resultSet.getString("operation"))
+                .entityId(resultSet.getInt("entityId")).
+                build();
     }
 }
