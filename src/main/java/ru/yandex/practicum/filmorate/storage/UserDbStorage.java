@@ -105,7 +105,7 @@ public class UserDbStorage implements UserStorage {
                 .userId(resultSet.getInt("user_id"))
                 .eventType(resultSet.getString("eventType"))
                 .operation(resultSet.getString("operation"))
-                .entityId(resultSet.getInt("entityId")).
-                build();
+                .entityId(resultSet.getInt("entityId"))
+                .build();
     }
 }
