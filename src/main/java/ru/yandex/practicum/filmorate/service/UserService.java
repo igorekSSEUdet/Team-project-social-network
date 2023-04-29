@@ -37,6 +37,10 @@ public class UserService {
         } else throw new NoSuchElementException("Пользователь не  найден");
     }
 
+    public void deleteUser(int userId) {
+        userStorage.deleteUser(userId);
+    }
+
     public void addFriend(int firstUser, int secondUser) {
         if (userStorage.isExists(firstUser) && userStorage.isExists(secondUser)) {
             userStorage.addFriend(firstUser, secondUser);
@@ -63,12 +67,7 @@ public class UserService {
 
     public List<User> getFriends(int id) {
         if (userStorage.isExists(id)) {
-            Set<Integer> friendsIds = userStorage.getById(id).getFriends();
-            List<User> friends = new ArrayList<>();
-            for (int friendsId : friendsIds) {
-                friends.add(userStorage.getById(friendsId));
-            }
-            return friends;
+            return userStorage.getFriends(id);
         } else throw new NoSuchElementException("Пользователь не найден");
     }
 }

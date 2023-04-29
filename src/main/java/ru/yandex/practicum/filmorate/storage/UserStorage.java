@@ -21,4 +21,6 @@ public interface UserStorage {
     void deleteFriend(int first, int second);
 
     boolean isExists(int id);
+
+    List<User> getFriends(int id);
 }

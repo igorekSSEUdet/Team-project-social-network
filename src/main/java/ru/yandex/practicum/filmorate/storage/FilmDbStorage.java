@@ -81,7 +81,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void deleteFilm(int id) {
-        throw new NotYetImplementedException("Не поддерживается");
+      String sql = "DELETE FROM films WHERE film_id = ?";
+      jdbcTemplate.update(sql,id);
     }
 
     @Override

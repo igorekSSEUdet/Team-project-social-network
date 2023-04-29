@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -42,6 +43,10 @@ public class FilmService {
         } else throw new NoSuchElementException("Фильм не найден");
     }
 
+    public void deleteFilm(int filmId) {
+        filmStorage.deleteFilm(filmId);
+    }
+
     public void addLike(int filmId, int userId) {
         if (filmStorage.isExists(filmId) && userStorage.isExists(userId)) {
             filmStorage.addLike(userId, filmId);
@@ -60,7 +65,7 @@ public class FilmService {
         if (count > films.size()) count = films.size();
         films.sort((Comparator.comparingInt(o -> o.getLikes().size())));
         Collections.reverse(films);
-        return films.subList(0,count);
+        return films.subList(0, count);
     }
 
     public List<Film> getFilmsByDirector(int id, String sortBy) {
@@ -71,7 +76,8 @@ public class FilmService {
                 return filmStorage.getFilmsByDirectorWithYear(id);
             case "likes":
                 return filmStorage.getFilmsByDirectorWithLikes(id);
-            default: throw new NoSuchElementException("Некорректный параметр запроса");
+            default:
+                throw new NoSuchElementException("Некорректный параметр запроса");
         }
     }
 }
