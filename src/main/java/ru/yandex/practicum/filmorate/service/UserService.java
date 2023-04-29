@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
