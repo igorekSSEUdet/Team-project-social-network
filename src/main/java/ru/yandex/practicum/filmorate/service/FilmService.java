@@ -74,4 +74,8 @@ public class FilmService {
             default: throw new NoSuchElementException("Некорректный параметр запроса");
         }
     }
+
+    public List<Film> getRecommendationForUser(int id) {
+        return filmStorage.getRecommendationForUser(id);
+    }
 }

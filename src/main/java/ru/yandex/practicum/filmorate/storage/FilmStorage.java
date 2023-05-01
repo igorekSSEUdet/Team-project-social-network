@@ -24,5 +24,7 @@ public interface FilmStorage {
 
     List<Film> getFilmsByDirectorWithLikes(int id);
 
+    List<Film> getRecommendationForUser(int id);
+
     boolean isExists(int id);
 }
