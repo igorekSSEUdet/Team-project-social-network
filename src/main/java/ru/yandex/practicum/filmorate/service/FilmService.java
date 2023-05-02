@@ -87,7 +87,12 @@ public class FilmService {
                 return filmStorage.getFilmsByDirectorWithYear(id);
             case "likes":
                 return filmStorage.getFilmsByDirectorWithLikes(id);
-            default: throw new NoSuchElementException("Некорректный параметр запроса");
+            default:
+                throw new NoSuchElementException("Некорректный параметр запроса");
         }
+    }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
     }
 }

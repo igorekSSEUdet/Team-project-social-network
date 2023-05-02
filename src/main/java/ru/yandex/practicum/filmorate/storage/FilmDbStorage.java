@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Primary
@@ -32,7 +33,7 @@ public class FilmDbStorage implements FilmStorage {
         if (!film.getGenres().isEmpty()) {
             film.getGenres().forEach(genre -> jdbcTemplate.update("INSERT INTO films_genres VALUES (?,?)",
                     film.getId(), genre.getId()));
-            }
+        }
         insertDirectors(film);
         return film;
     }
@@ -49,7 +50,7 @@ public class FilmDbStorage implements FilmStorage {
         if (!film.getGenres().isEmpty()) {
             film.getGenres().forEach((genre) -> jdbcTemplate.update("INSERT INTO films_genres VALUES (?, ?)",
                     film.getId(), genre.getId()));
-            }
+        }
         jdbcTemplate.update("DELETE FROM films_directors WHERE film_id = ?", film.getId());
         insertDirectors(film);
         return film;
@@ -143,5 +144,18 @@ public class FilmDbStorage implements FilmStorage {
                 } else throw new NoSuchElementException("Режиссёр не найден");
             });
         }
+    }
+
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        String sql = "SELECT FILM_ID FROM LIKES WHERE USER_ID = ? " +
+                "INTERSECT " +
+                "SELECT FILM_ID FROM LIKES WHERE USER_ID = ?";
+        List<Integer> listOfCommonFilms = jdbcTemplate.queryForList(sql, new Object[]{userId, friendId}, Integer.class);
+        return listOfCommonFilms.stream()
+                .map(id -> getById(id))
+                .sorted(Comparator.<Film>comparingInt(f -> f.getLikes().size()).reversed())
+                .collect(Collectors.toList());
     }
 }
