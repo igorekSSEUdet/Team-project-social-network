@@ -20,7 +20,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final EventUtils eventUtils;
+    private final EventStorage eventUtils;
 
     @Override
     public User addUser(User user) {

@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final EventUtils eventUtils;
+    private final EventDbStorage eventUtils;
 
     @Override
     public Review addReview(Review review) {

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class EventUtils {
+public class EventDbStorage implements EventStorage {
 
     private final JdbcTemplate jdbcTemplate;
 

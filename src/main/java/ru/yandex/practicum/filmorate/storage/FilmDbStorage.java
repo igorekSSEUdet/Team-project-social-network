@@ -22,7 +22,7 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MpaStorage mpaStorage;
     private final DirectorStorage directorStorage;
-    private final EventUtils eventUtils;
+    private final EventStorage eventUtils;
 
     @Override
     public Film addFilm(Film film) {
