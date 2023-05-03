@@ -160,7 +160,7 @@ public class FilmDbStorage implements FilmStorage {
                 .sorted(Comparator.<Film>comparingInt(f -> f.getLikes().size()).reversed())
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     public List<Film> getFilmsByQuery(String query, List<String> by) {
         String sql = "SELECT * " +

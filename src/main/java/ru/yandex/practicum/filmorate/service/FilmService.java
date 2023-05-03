@@ -99,7 +99,7 @@ public class FilmService {
     public List<Film> getCommonFilms(int userId, int friendId) {
         return filmStorage.getCommonFilms(userId, friendId);
     }
-    
+
     public List<Film> getFilmsByQuery(String query, List<String> by) {
         return filmStorage.getFilmsByQuery(query, by);
     }
