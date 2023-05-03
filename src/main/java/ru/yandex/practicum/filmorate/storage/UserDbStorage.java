@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -41,7 +40,9 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User getById(int id) {
         String sql = "SELECT * FROM users WHERE user_id = ?";
-        return jdbcTemplate.queryForObject(sql, this::createUser, id);
+        User user = jdbcTemplate.queryForObject(sql, this::createUser, id);
+        getFriends(user.getId()).forEach((friend) -> user.getFriends().add(friend.getId()));
+        return user;
     }
 
     @Override
@@ -66,7 +67,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void deleteUser(int id) {
-        throw new NotYetImplementedException("Не поддерживается");
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        jdbcTemplate.update(sql,id);
     }
 
     @Override
@@ -83,11 +85,10 @@ public class UserDbStorage implements UserStorage {
         user.setLogin(resultSet.getString("login"));
         user.setName(resultSet.getString("name"));
         user.setBirthday(Objects.requireNonNull(resultSet.getDate("birthday")).toLocalDate());
-        getFriends(user.getId()).forEach((friend) -> user.getFriends().add(friend.getId()));
         return user;
     }
 
-    private List<User> getFriends(int id) {
+    public List<User> getFriends(int id) {
         String sql = "SELECT * FROM users JOIN friends ON users.user_id=friends.user_id WHERE friends.friend_id = ?";
         return jdbcTemplate.query(sql, this::createUser, id);
     }

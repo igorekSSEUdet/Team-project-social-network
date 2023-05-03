@@ -23,5 +23,7 @@ public interface UserStorage {
 
     boolean isExists(int id);
 
+    List<User> getFriends(int id);
+
     List<Event> getEvents(int userId);
 }
