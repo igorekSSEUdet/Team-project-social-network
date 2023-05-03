@@ -3,12 +3,14 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,13 +60,27 @@ public class FilmService {
         } else throw new NoSuchElementException("Некорректный id пользователя/фильма");
     }
 
-    public List<Film> getPopular(int count) {
+    public List<Film> getPopular(int count, Integer genreId, int year) {
         List<Film> films = new ArrayList<>(filmStorage.getFilmsList());
         if (count != 1) count--;
         if (count > films.size()) count = films.size();
         films.sort((Comparator.comparingInt(o -> o.getLikes().size())));
         Collections.reverse(films);
-        return films.subList(0, count);
+        if (genreId != null) {
+            films = films.stream()
+                    .filter(film -> film.getGenres() != null)
+                    .filter(film -> film.getGenres().stream()
+                            .map(Genre::getId)
+                            .collect(Collectors.toList())
+                            .contains(genreId))
+                    .collect(Collectors.toList());
+        }
+        if (year != 0) {
+            films = films.stream()
+                    .filter(film -> film.getReleaseDate().getYear() == year)
+                    .collect(Collectors.toList());
+        }
+        return films.stream().limit(count).collect(Collectors.toList());
     }
 
     public List<Film> getFilmsByDirector(int id, String sortBy) {
@@ -75,8 +91,7 @@ public class FilmService {
                 return filmStorage.getFilmsByDirectorWithYear(id);
             case "likes":
                 return filmStorage.getFilmsByDirectorWithLikes(id);
-            default:
-                throw new NoSuchElementException("Некорректный параметр запроса");
+            default: throw new NoSuchElementException("Некорректный параметр запроса");
         }
     }
 }
