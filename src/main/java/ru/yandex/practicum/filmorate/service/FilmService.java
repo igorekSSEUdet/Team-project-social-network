@@ -95,4 +95,8 @@ public class FilmService {
                 throw new NoSuchElementException("Некорректный параметр запроса");
         }
     }
+
+    public List<Film> getFilmsByQuery(String query, List<String> by) {
+        return filmStorage.getFilmsByQuery(query, by);
+    }
 }

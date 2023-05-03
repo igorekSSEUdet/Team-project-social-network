@@ -33,7 +33,7 @@ public class FilmDbStorage implements FilmStorage {
         if (!film.getGenres().isEmpty()) {
             film.getGenres().forEach(genre -> jdbcTemplate.update("INSERT INTO films_genres VALUES (?,?)",
                     film.getId(), genre.getId()));
-            }
+        }
         insertDirectors(film);
         return film;
     }
@@ -50,7 +50,7 @@ public class FilmDbStorage implements FilmStorage {
         if (!film.getGenres().isEmpty()) {
             film.getGenres().forEach((genre) -> jdbcTemplate.update("INSERT INTO films_genres VALUES (?, ?)",
                     film.getId(), genre.getId()));
-            }
+        }
         jdbcTemplate.update("DELETE FROM films_directors WHERE film_id = ?", film.getId());
         insertDirectors(film);
         return film;
@@ -149,4 +149,41 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public List<Film> getFilmsByQuery(String query, List<String> by) {
+        String sql = "SELECT * " +
+                "FROM (SELECT f.FILM_ID, F.NAME, DESCRIPTION, RELEASE_DATE, " +
+                "DURATION, MPA_ID, director_name, COUNT(USER_ID) AS COUNT " +
+                "FROM FILMS f " +
+                "LEFT JOIN FILMS_DIRECTORS FD on f.FILM_ID = FD.FILM_ID " +
+                "LEFT JOIN DIRECTORS D on FD.DIRECTOR_ID = D.DIRECTOR_ID " +
+                "LEFT JOIN LIKES L on f.FILM_ID = L.FILM_ID " +
+                "GROUP BY f.FILM_ID " +
+                "ORDER BY COUNT DESC) ";
+
+        String where = "WHERE ";
+        int cnt = 0;
+        if (by.stream().filter(s -> s.equalsIgnoreCase("title")).findAny().isPresent()) {
+            where += "LOWER(NAME) LIKE ?";
+            cnt++;
+        }
+        if (by.stream().filter(s -> s.equalsIgnoreCase("director")).findAny().isPresent()) {
+            if (cnt > 0) {
+                where += " OR ";
+            }
+            where += "LOWER(director_name) LIKE ?";
+            cnt++;
+        }
+
+        if (cnt == 0) {
+            throw new IllegalArgumentException("Поиск выполняется только по title и director");
+        }
+
+        String[] list = new String[cnt];
+        Arrays.fill(list, "%" + query.toLowerCase() + "%");
+
+        List<Film> films = jdbcTemplate.query(sql + where, this::createFilm, list);
+
+        return films;
+    }
 }
