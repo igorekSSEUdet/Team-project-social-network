@@ -44,7 +44,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable int userId) {
-        log.debug( String.format("Получен запрос DELETE users/%d", userId));
+        log.debug(String.format("Получен запрос DELETE users/%d", userId));
         userService.deleteUser(userId);
     }
 

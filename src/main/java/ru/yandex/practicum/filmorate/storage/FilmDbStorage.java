@@ -14,7 +14,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Component
 @Primary
 @AllArgsConstructor
@@ -161,7 +160,7 @@ public class FilmDbStorage implements FilmStorage {
                 .sorted(Comparator.<Film>comparingInt(f -> f.getLikes().size()).reversed())
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     public List<Film> getFilmsByQuery(String query, List<String> by) {
         String sql = "SELECT * " +
@@ -198,5 +197,32 @@ public class FilmDbStorage implements FilmStorage {
         List<Film> films = jdbcTemplate.query(sql + where, this::createFilm, list);
 
         return films;
+    }
+
+    @Override
+    public List<Film> getRecommendationForUser(int id) {
+        /** Запрос находит 10 пользователей, которые иемют максимальное пересечением по лайкам
+         *  с запрошенным пользователем.
+         *  И затем возвращает список фильмов, которые лайкнули эти 10 юзеров,но не лайкнул запрошенный.
+         *  Запрос конечно абсолютно не читаемый... Что с этим делать, я не знаю...
+         */
+        String sqlRecommendedFilms = new StringBuilder()
+                .append("SELECT * FROM films f WHERE film_id IN")   // выбираем фильмы с id из найденного диапазона
+                .append(" ( ")
+                .append("SELECT film_id FROM likes WHERE user_id IN")   // выбираем id фильмов, которые смотрели "похожие" пользователи, но не смотрел запрошенный
+                .append("    ( ")
+                .append("    SELECT t2.user_id FROM likes AS t1 ")      // выбираем id пользователей, максимально пересекающихся по лайкам с запрошенным
+                .append("    INNER JOIN likes AS t2 ON t1.film_id = t2.film_id AND t1.user_id = ? ")
+                .append("    LEFT JOIN (SELECT user_id, COUNT(film_id) total FROM likes GROUP BY user_id) AS t3 ON t2.user_id = t3.user_id ")   //находим для каждого пользователя кол-во фильмов, которые он лайкнул
+                .append("    GROUP BY t2.user_id, t3.total ")
+                .append("    HAVING (t3.total - COUNT(t1.user_id)) > 0 ")   //отсеиваем тех, у кого лайки совпали полностью (нет фильмов для рекомендации)
+                .append("    ORDER BY COUNT(t1.user_id) DESC ")     // сортируем по максимальному пересечению по лайкам
+                .append("    LIMIT 10 ")        // оставляем только ТОП 10 похожих пользователей
+                .append("    ) ")
+                .append("EXCEPT ")      // выбираем разность множеств фильмов найденных пользователей
+                .append("SELECT film_id FROM likes WHERE user_id = ?")      // и запрошенного
+                .append(" );")
+                .toString();
+        return jdbcTemplate.query(sqlRecommendedFilms, this::createFilm, id, id);
     }
 }
