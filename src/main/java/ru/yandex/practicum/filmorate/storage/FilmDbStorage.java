@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -149,6 +150,18 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        String sql = "SELECT FILM_ID FROM LIKES WHERE USER_ID = ? " +
+                "INTERSECT " +
+                "SELECT FILM_ID FROM LIKES WHERE USER_ID = ?";
+        List<Integer> listOfCommonFilms = jdbcTemplate.queryForList(sql, new Object[]{userId, friendId}, Integer.class);
+        return listOfCommonFilms.stream()
+                .map(id -> getById(id))
+                .sorted(Comparator.<Film>comparingInt(f -> f.getLikes().size()).reversed())
+                .collect(Collectors.toList());
+    }
+    
     @Override
     public List<Film> getFilmsByQuery(String query, List<String> by) {
         String sql = "SELECT * " +
