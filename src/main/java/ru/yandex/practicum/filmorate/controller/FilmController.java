@@ -41,6 +41,12 @@ public class FilmController {
         return filmService.getFilmById(filmId);
     }
 
+    @DeleteMapping("/{filmId}")
+    public void deleteFilm(@PathVariable int filmId) {
+        log.debug(String.format("Получен запрос DELETE films/%d", filmId));
+        filmService.deleteFilm(filmId);
+    }
+
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable int id, @PathVariable int userId) {
         log.debug(String.format("Получен запрос PUT films/%d/like/%d", id, userId));
@@ -72,5 +78,11 @@ public class FilmController {
                                      @RequestParam int friendId) {
         log.debug(String.format("Получен запрос GET /films/common?userId=%d&friendId=%d", userId, friendId));
         return filmService.getCommonFilms(userId, friendId);
+    }
+        
+    @GetMapping("/search")
+    public List<Film> getFilmsByQuery(@RequestParam String query, @RequestParam List<String> by) {
+        log.debug(String.format("Получен запрос GET /films/search?query=%s&by=%s", query, by));
+        return filmService.getFilmsByQuery(query, by);
     }
 }

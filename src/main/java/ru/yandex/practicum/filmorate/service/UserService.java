@@ -2,13 +2,13 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +37,10 @@ public class UserService {
         } else throw new NoSuchElementException("Пользователь не  найден");
     }
 
+    public void deleteUser(int userId) {
+        userStorage.deleteUser(userId);
+    }
+
     public void addFriend(int firstUser, int secondUser) {
         if (userStorage.isExists(firstUser) && userStorage.isExists(secondUser)) {
             userStorage.addFriend(firstUser, secondUser);
@@ -63,12 +67,13 @@ public class UserService {
 
     public List<User> getFriends(int id) {
         if (userStorage.isExists(id)) {
-            Set<Integer> friendsIds = userStorage.getById(id).getFriends();
-            List<User> friends = new ArrayList<>();
-            for (int friendsId : friendsIds) {
-                friends.add(userStorage.getById(friendsId));
-            }
-            return friends;
+            return userStorage.getFriends(id);
         } else throw new NoSuchElementException("Пользователь не найден");
+    }
+
+    public List<Event> getEvents(int userId) {
+        if (userStorage.isExists(userId)) {
+            return userStorage.getEvents(userId);
+        }  else throw new NoSuchElementException("Пользователь не найден");
     }
 }

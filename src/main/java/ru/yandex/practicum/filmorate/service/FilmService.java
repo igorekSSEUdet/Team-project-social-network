@@ -44,6 +44,10 @@ public class FilmService {
         } else throw new NoSuchElementException("Фильм не найден");
     }
 
+    public void deleteFilm(int filmId) {
+        filmStorage.deleteFilm(filmId);
+    }
+
     public void addLike(int filmId, int userId) {
         if (filmStorage.isExists(filmId) && userStorage.isExists(userId)) {
             filmStorage.addLike(userId, filmId);
@@ -94,5 +98,9 @@ public class FilmService {
 
     public List<Film> getCommonFilms(int userId, int friendId) {
         return filmStorage.getCommonFilms(userId, friendId);
+    }
+    
+    public List<Film> getFilmsByQuery(String query, List<String> by) {
+        return filmStorage.getFilmsByQuery(query, by);
     }
 }
