@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -14,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+
 @Component
 @Primary
 @AllArgsConstructor
@@ -21,6 +21,7 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MpaStorage mpaStorage;
     private final DirectorStorage directorStorage;
+    private final EventStorage eventUtils;
 
     @Override
     public Film addFilm(Film film) {
@@ -71,17 +72,20 @@ public class FilmDbStorage implements FilmStorage {
     public void addLike(int userId, int filmId) {
         String sql = "INSERT INTO likes VALUES (?, ?)";
         jdbcTemplate.update(sql, userId, filmId);
+        eventUtils.addEvent(userId,"LIKE","ADD",filmId);
     }
 
     @Override
     public void removeLike(int userId, int filmId) {
         String sql = "DELETE FROM likes WHERE user_id = ? AND film_id = ?";
         jdbcTemplate.update(sql, userId, filmId);
+        eventUtils.addEvent(userId,"LIKE","REMOVE",filmId);
     }
 
     @Override
     public void deleteFilm(int id) {
-        throw new NotYetImplementedException("Не поддерживается");
+      String sql = "DELETE FROM films WHERE film_id = ?";
+      jdbcTemplate.update(sql,id);
     }
 
     @Override

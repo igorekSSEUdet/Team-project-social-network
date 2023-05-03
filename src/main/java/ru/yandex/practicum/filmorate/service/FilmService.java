@@ -44,6 +44,10 @@ public class FilmService {
         } else throw new NoSuchElementException("Фильм не найден");
     }
 
+    public void deleteFilm(int filmId) {
+        filmStorage.deleteFilm(filmId);
+    }
+
     public void addLike(int filmId, int userId) {
         if (filmStorage.isExists(filmId) && userStorage.isExists(userId)) {
             filmStorage.addLike(userId, filmId);
