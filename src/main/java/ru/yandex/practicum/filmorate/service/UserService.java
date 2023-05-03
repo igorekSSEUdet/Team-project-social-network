@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -68,5 +69,11 @@ public class UserService {
         if (userStorage.isExists(id)) {
             return userStorage.getFriends(id);
         } else throw new NoSuchElementException("Пользователь не найден");
+    }
+
+    public List<Event> getEvents(int userId) {
+        if (userStorage.isExists(userId)) {
+            return userStorage.getEvents(userId);
+        }  else throw new NoSuchElementException("Пользователь не найден");
     }
 }

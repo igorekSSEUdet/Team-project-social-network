@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final EventDbStorage eventUtils;
 
     @Override
     public Review addReview(Review review) {
@@ -24,6 +25,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 .usingGeneratedKeyColumns("review_id");
         int id = simpleJdbcInsert.executeAndReturnKey(review.toMap()).intValue();
         review.setReviewId(id);
+        eventUtils.addEvent(review.getUserId(),"REVIEW","ADD",id);
         return review;
     }
 
@@ -31,6 +33,7 @@ public class ReviewDbStorage implements ReviewStorage {
     public Review updateReview(Review review) {
         String sql = "UPDATE reviews SET content = ?, is_positive = ? WHERE review_id = ?";
         jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(), review.getReviewId());
+        eventUtils.addEvent(getById(review.getReviewId()).getUserId(),"REVIEW","UPDATE",review.getReviewId());
         return getById(review.getReviewId());
     }
 
@@ -43,6 +46,7 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public void deleteReview(int id) {
         String sql = "DELETE FROM reviews WHERE review_id = ?";
+        eventUtils.addEvent(getById(id).getUserId(),"REVIEW","REMOVE",id);
         jdbcTemplate.update(sql, id);
     }
 
@@ -101,4 +105,5 @@ public class ReviewDbStorage implements ReviewStorage {
         }
         jdbcTemplate.update(sql, id);
     }
+
 }

@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+
 @Component
 @Primary
 @AllArgsConstructor
@@ -20,6 +21,7 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MpaStorage mpaStorage;
     private final DirectorStorage directorStorage;
+    private final EventStorage eventUtils;
 
     @Override
     public Film addFilm(Film film) {
@@ -70,12 +72,14 @@ public class FilmDbStorage implements FilmStorage {
     public void addLike(int userId, int filmId) {
         String sql = "INSERT INTO likes VALUES (?, ?)";
         jdbcTemplate.update(sql, userId, filmId);
+        eventUtils.addEvent(userId,"LIKE","ADD",filmId);
     }
 
     @Override
     public void removeLike(int userId, int filmId) {
         String sql = "DELETE FROM likes WHERE user_id = ? AND film_id = ?";
         jdbcTemplate.update(sql, userId, filmId);
+        eventUtils.addEvent(userId,"LIKE","REMOVE",filmId);
     }
 
     @Override
@@ -144,4 +148,5 @@ public class FilmDbStorage implements FilmStorage {
             });
         }
     }
+
 }
