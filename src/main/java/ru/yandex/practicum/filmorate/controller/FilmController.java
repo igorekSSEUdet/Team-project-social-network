@@ -18,7 +18,7 @@ public class FilmController {
     private final FilmService filmService;
 
     @PostMapping
-    public Film addFilm(@RequestBody @Valid  Film film) {
+    public Film addFilm(@RequestBody @Valid Film film) {
         log.debug("Получен запрос POST /films.\n" + film.toString());
         return filmService.addFilm(film);
     }
@@ -41,6 +41,12 @@ public class FilmController {
         return filmService.getFilmById(filmId);
     }
 
+    @DeleteMapping("/{filmId}")
+    public void deleteFilm(@PathVariable int filmId) {
+        log.debug(String.format("Получен запрос DELETE films/%d", filmId));
+        filmService.deleteFilm(filmId);
+    }
+
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable int id, @PathVariable int userId) {
         log.debug(String.format("Получен запрос PUT films/%d/like/%d", id, userId));
@@ -54,8 +60,29 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") int count,
+                                 @RequestParam(required = false) Integer genreId,
+                                 @RequestParam(defaultValue = "0") int year) {
         log.debug(String.format("Получен запрос GET films/popular на %d фильмов", count));
-        return filmService.getPopular(count);
+        return filmService.getPopular(count, genreId, year);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsByDirector(@PathVariable int directorId, @RequestParam String sortBy) {
+        log.debug(String.format("Получен запрос GET /films/directors/%d", directorId));
+        return filmService.getFilmsByDirector(directorId, sortBy);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam int userId,
+                                     @RequestParam int friendId) {
+        log.debug(String.format("Получен запрос GET /films/common?userId=%d&friendId=%d", userId, friendId));
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
+    @GetMapping("/search")
+    public List<Film> getFilmsByQuery(@RequestParam String query, @RequestParam List<String> by) {
+        log.debug(String.format("Получен запрос GET /films/search?query=%s&by=%s", query, by));
+        return filmService.getFilmsByQuery(query, by);
     }
 }

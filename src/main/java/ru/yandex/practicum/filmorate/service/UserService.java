@@ -2,13 +2,13 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        if (userStorage.getById(user.getId()) != null) {
+        if (userStorage.isExists(user.getId())) {
             if (user.getName() == null) user.setName(user.getLogin());
             return userStorage.updateUser(user);
         } else throw new NoSuchElementException("Пользователь не найден");
@@ -32,25 +32,29 @@ public class UserService {
     }
 
     public User getUserById(int id) {
-        if (userStorage.getById(id) != null) {
+        if (userStorage.isExists(id)) {
             return userStorage.getById(id);
         } else throw new NoSuchElementException("Пользователь не  найден");
     }
 
+    public void deleteUser(int userId) {
+        userStorage.deleteUser(userId);
+    }
+
     public void addFriend(int firstUser, int secondUser) {
-        if (userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
+        if (userStorage.isExists(firstUser) && userStorage.isExists(secondUser)) {
             userStorage.addFriend(firstUser, secondUser);
         } else throw new NoSuchElementException("Пользователь не найден");
     }
 
     public void deleteFriend(int firstUser, int secondUser) {
-        if (userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
+        if (userStorage.isExists(firstUser) && userStorage.isExists(secondUser)) {
         userStorage.deleteFriend(firstUser, secondUser);
         } else throw new NoSuchElementException("Пользователь не найден");
     }
 
     public List<User> getCommonFriends(int firstUser, int secondUser) {
-        if (userStorage.getById(firstUser) != null && userStorage.getById(secondUser) != null) {
+        if (userStorage.isExists(firstUser) && userStorage.isExists(secondUser)) {
             List<Integer> commonFriendsIds = new ArrayList<>(userStorage.getById(firstUser).getFriends());
             commonFriendsIds.retainAll(userStorage.getById(secondUser).getFriends());
             List<User> commonFriends = new ArrayList<>();
@@ -62,13 +66,14 @@ public class UserService {
     }
 
     public List<User> getFriends(int id) {
-        if (userStorage.getById(id) != null) {
-            Set<Integer> friendsIds = userStorage.getById(id).getFriends();
-            List<User> friends = new ArrayList<>();
-            for (int friendsId : friendsIds) {
-                friends.add(userStorage.getById(friendsId));
-            }
-            return friends;
+        if (userStorage.isExists(id)) {
+            return userStorage.getFriends(id);
         } else throw new NoSuchElementException("Пользователь не найден");
+    }
+
+    public List<Event> getEvents(int userId) {
+        if (userStorage.isExists(userId)) {
+            return userStorage.getEvents(userId);
+        }  else throw new NoSuchElementException("Пользователь не найден");
     }
 }
