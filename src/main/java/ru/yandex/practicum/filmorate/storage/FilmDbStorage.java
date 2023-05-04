@@ -175,11 +175,11 @@ public class FilmDbStorage implements FilmStorage {
 
         String where = "WHERE ";
         int cnt = 0;
-        if (by.stream().filter(s -> s.equalsIgnoreCase("title")).findAny().isPresent()) {
+        if (by.stream().anyMatch(s -> s.equalsIgnoreCase("title"))) {
             where += "LOWER(NAME) LIKE ?";
             cnt++;
         }
-        if (by.stream().filter(s -> s.equalsIgnoreCase("director")).findAny().isPresent()) {
+        if (by.stream().anyMatch(s -> s.equalsIgnoreCase("director"))) {
             if (cnt > 0) {
                 where += " OR ";
             }
